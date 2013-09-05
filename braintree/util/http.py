@@ -10,6 +10,8 @@ from braintree.exceptions.server_error import ServerError
 from braintree.exceptions.unexpected_error import UnexpectedError
 from braintree.exceptions.upgrade_required_error import UpgradeRequiredError
 
+import sys
+
 class Http(object):
     @staticmethod
     def is_error_status(status):
@@ -63,7 +65,7 @@ class Http(object):
                 return XmlUtil.dict_from_xml(response_body)
 
     def __authorization_header(self):
-        return "Basic " + base64.encodestring(self.config.public_key + ":" + self.config.private_key).strip()
+        return "Basic " + self.__base64_encode(self.config.public_key + ":" + self.config.private_key).strip()
 
     def __headers(self):
         return {
@@ -74,3 +76,8 @@ class Http(object):
             "X-ApiVersion": braintree.configuration.Configuration.api_version()
         }
 
+    def __base64_encode(self, s):
+        if sys.version_info[0] < 3:
+            return base64.encodestring(s)
+        else:
+            return base64.encodestring(s.encode('utf8')).decode('ascii')

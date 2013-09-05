@@ -2,6 +2,8 @@ import datetime
 import types
 from decimal import Decimal
 
+import sys
+
 class Generator(object):
     def __init__(self, dict):
         self.dict = dict
@@ -34,7 +36,7 @@ class Generator(object):
         open_tag = "<" + self.__escape(key) + ">"
         close_tag = "</" + self.__escape(key) + ">"
 
-        if isinstance(value, unicode):
+        if isinstance(value, unicode) and sys.version_info[0] < 3: # in python 3 strings are unicode, doing the encode turns things to bytes
             return open_tag + self.__escape(value).encode('ascii', 'xmlcharrefreplace') + close_tag
         elif isinstance(value, str):
             return open_tag + self.__escape(value) + close_tag
